@@ -12,3 +12,9 @@ data->write_mutex : protège l'accès à l'affichage pour
 
 dans la routine du philosophe on passe un void *
 afin que tout type de données puisse être passé
+
+
+NB DE PHILO = NB DE FORK = NB DE MUTEX
+
+Deadlock : plusieurs threads se bloquent car ils attendent
+la mm ressource
