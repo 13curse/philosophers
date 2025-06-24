@@ -1,0 +1,14 @@
+data->stop : 0 si entrain de manger, 1 si mort,
+2 si tout les philos ont mangé
+
+philos->finished : 1 si le philosophe a fini de manger
+
+t_glob : structure qui gère chaque tableau
+t_data : structure contenant tout les paramètres et états partagés
+t_philo : structure d'un philosophe
+
+data->write_mutex : protège l'accès à l'affichage pour 
+éviter que les messages des philos soient mélangés
+
+dans la routine du philosophe on passe un void *
+afin que tout type de données puisse être passé
