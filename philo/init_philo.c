@@ -35,11 +35,15 @@ void	print_action(t_philo *philo, const char *action)
 void	precise_sleep(long int duration_ms, t_data *data)
 {
 	long int	start;
+	int			stop;
 	
 	start = get_timestamp();
 	while ((get_timestamp() - start) < duration_ms)
 	{
-		if (data->stop)
+		pthread_mutex_lock(&data->write_mutex);
+		stop = data->stop;
+		pthread_mutex_unlock(&data->write_mutex);
+		if (stop)
 			break;
 		usleep(100);
 	}
@@ -50,37 +54,44 @@ void	*philosopher_routine(void *arg)
 	t_philo	*philo;
 	int	left_locked;
 	int	right_locked;
+	int	done;
 
 	philo = (t_philo *)arg;
+	done = 0;
 	if (philo->data->nb_philo == 1)
 	{
 		print_action(philo, "is thinking");
-		pthread_mutex_lock(philo->left_fork);
 		print_action(philo, "has taken a fork");
-		while (!philo->data->stop)
-			usleep(100);
-		pthread_mutex_unlock(philo->left_fork);
+		usleep(philo->data->die);
+		// while (1)
+		// {
+		// 	pthread_mutex_lock(&philo->data->write_mutex);
+		// 	if (philo->data->stop)
+		// 	{
+		// 		pthread_mutex_unlock(&philo->data->write_mutex);
+		// 		break;
+		// 	}
+		// 	pthread_mutex_unlock(philo->left_fork);
+		// 	usleep(100);
+		// }
+		// pthread_mutex_unlock(philo->left_fork);
 		return (NULL);
 	}
 	usleep((philo->id - 1) * 2000);
-	while (!philo->data->stop)
+	while (1)
 	{
-		print_action(philo, "is thinking");
+		pthread_mutex_lock(&philo->data->write_mutex);
 		if (philo->data->stop)
+		{
+			pthread_mutex_unlock(&philo->data->write_mutex);
 			break;
+		}
+		pthread_mutex_unlock(&philo->data->write_mutex);
+		print_action(philo, "is thinking");
 		usleep((philo->id % philo->data->nb_philo) * 100);
 		left_locked = 0;
 		right_locked = 0;
-		if (philo->id == philo->data->nb_philo)
-		{
-			pthread_mutex_lock(philo->right_fork);
-			right_locked = 1;
-			print_action(philo, "has taken a fork");
-			pthread_mutex_lock(philo->left_fork);
-			left_locked = 1;
-			print_action(philo, "has taken a fork");
-		}
-		else if (philo->id % 2 == 0)
+		if (philo->id == philo->data->nb_philo || philo->id % 2 == 0)
 		{
 			pthread_mutex_lock(philo->right_fork);
 			right_locked = 1;
@@ -101,25 +112,42 @@ void	*philosopher_routine(void *arg)
 		pthread_mutex_lock(&philo->data->write_mutex);
 		philo->last_meal_time = get_timestamp();
 		pthread_mutex_unlock(&philo->data->write_mutex);
+		pthread_mutex_lock(&philo->data->write_mutex);
 		if (philo->data->stop)
+		{
+			pthread_mutex_unlock(&philo->data->write_mutex);
+			if (right_locked)
+				pthread_mutex_unlock(philo->right_fork);
+			if (left_locked)
+				pthread_mutex_unlock(philo->left_fork);
 			break;
+		}
+		pthread_mutex_unlock(&philo->data->write_mutex);
 		print_action(philo, "is eating");
 		precise_sleep(philo->data->eat, philo->data);
 		philo->meals_eaten++;
+		if (!done && philo->data->nb_meals > 0 && philo->meals_eaten >= philo->data->nb_meals)
+		{
+			pthread_mutex_lock(&philo->data->write_mutex);
+			philo->data->nb_p_finish_eat++;
+			pthread_mutex_unlock(&philo->data->write_mutex);
+			done = 1;
+		}
 		if (right_locked)
 			pthread_mutex_unlock(philo->right_fork);
 		if (left_locked)
 			pthread_mutex_unlock(philo->left_fork);
 		usleep(500);
+		pthread_mutex_lock(&philo->data->write_mutex);
 		if (philo->data->stop)
+		{
+			pthread_mutex_unlock(&philo->data->write_mutex);
 			break;
+		}
+		pthread_mutex_unlock(&philo->data->write_mutex);
 		print_action(philo, "is sleeping");
 		precise_sleep(philo->data->sleep, philo->data);
 	}
-	if (right_locked)
-		pthread_mutex_unlock(philo->right_fork);
-	if (left_locked)
-		pthread_mutex_unlock(philo->left_fork);
 	return (NULL);
 }
 

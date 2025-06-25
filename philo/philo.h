@@ -6,7 +6,7 @@
 /*   By: sbehar <sbehar@student.42nice.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:24:05 by sbehar            #+#    #+#             */
-/*   Updated: 2025/06/24 20:47:05 by sbehar           ###   ########.fr       */
+/*   Updated: 2025/06/25 17:54:27 by sbehar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct	s_data
 	int				die;
 	int				eat;
 	int				sleep;
+	int				nb_meals;
 	long int		start_time;
 	pthread_mutex_t	write_mutex;
 	int				nb_p_finish_eat;
@@ -42,7 +43,7 @@ typedef struct	s_philo
 	pthread_mutex_t	*left_fork;
 	t_data			*data;
 	long int		last_meal_time;
-	unsigned int	meals_eaten;
+	int				meals_eaten;
 	int				finished;
 }	t_philo;
 

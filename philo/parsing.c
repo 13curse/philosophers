@@ -73,16 +73,19 @@ static void	init_data(t_data *data, char **argv)
 	data->sleep = atoi(argv[4]);
 	data->nb_p_finish_eat = 0;
 	data->stop = 0;
+	data->nb_meals = -1;
+	if (argv[5])
+		data->nb_meals = atoi(argv[5]);
 }
 
 int	parse_args(int argc, char **argv, t_data *data)
 {
 	int	i;
 
-	if (argc != 5)
+	if (argc != 5 && argc != 6)
 	{
-		printf("Error: 4 arguments required.\n");
-		printf("Usage: ./philo nb_philo time_to_die time_to_eat time_to_sleep\n");
+		printf("Error: 4 or 5 arguments required.\n");
+		printf("Usage: ./philo nb_philo time_to_die time_to_eat time_to_sleep [nb_meals]\n");
 		return (1);
 	}
 	i = 1;

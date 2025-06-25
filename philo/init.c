@@ -66,6 +66,12 @@ int	init_env(t_env *env)
 		env->philos[i].last_meal_time = env->data.start_time;
 		i++;
 	}
+	i = 0;
+	while (i < env->data.nb_philo)
+	{
+		env->philos[i].meals_eaten = 0;
+		i++;
+	}
 	return (0);
 }
 
