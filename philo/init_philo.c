@@ -62,19 +62,7 @@ void	*philosopher_routine(void *arg)
 	{
 		print_action(philo, "is thinking");
 		print_action(philo, "has taken a fork");
-		usleep(philo->data->die);
-		// while (1)
-		// {
-		// 	pthread_mutex_lock(&philo->data->write_mutex);
-		// 	if (philo->data->stop)
-		// 	{
-		// 		pthread_mutex_unlock(&philo->data->write_mutex);
-		// 		break;
-		// 	}
-		// 	pthread_mutex_unlock(philo->left_fork);
-		// 	usleep(100);
-		// }
-		// pthread_mutex_unlock(philo->left_fork);
+		precise_sleep(philo->data->die, philo->data);
 		return (NULL);
 	}
 	usleep((philo->id - 1) * 2000);
@@ -113,7 +101,7 @@ void	*philosopher_routine(void *arg)
 		philo->last_meal_time = get_timestamp();
 		pthread_mutex_unlock(&philo->data->write_mutex);
 		pthread_mutex_lock(&philo->data->write_mutex);
-		if (philo->data->stop)
+		if (philo->data->stop || (philo->data->nb_meals > 0 && philo->meals_eaten >= philo->data->nb_meals))
 		{
 			pthread_mutex_unlock(&philo->data->write_mutex);
 			if (right_locked)
