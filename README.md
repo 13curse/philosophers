@@ -1,6 +1,6 @@
 ## Philosophers 🍝
 
-This project is all about simulating the classic Dining Philosophers problem using threads, mutexes, and (for the bonus) processes and semaphores. 
+This project is all about simulating the classic **Dining Philosophers problem** using **threads**, **mutexes**, and (for the bonus) **processes** and **semaphores**. 
 The challenge is to manage concurrency and synchronization so that philosophers can eat, think, and sleep without starving or causing deadlocks.
 
 ## Features
