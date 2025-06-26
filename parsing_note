@@ -1,4 +1,4 @@
 ./philo nb_de_philo temps_av._mourir temps_pour_manger
-temps_pour_dormir
+temps_pour_dormir [nb_de_repas]
 
 toutes les valeurs sont strictement positives
