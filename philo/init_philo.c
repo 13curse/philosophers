@@ -17,6 +17,7 @@
 long int	get_timestamp(void)
 {
 	struct timeval	tv;
+
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
@@ -25,8 +26,10 @@ long int	get_timestamp(void)
 void	print_action(t_philo *philo, const char *action)
 {
 	pthread_mutex_lock(&philo->data->write_mutex);
-	if (!philo->data->stop || (philo->data->stop && !ft_strcmp(action, "died")))
-		printf("%ld %d %s\n", get_timestamp() - philo->data->start_time, philo->id, action);
+	if (!philo->data->stop
+		|| (philo->data->stop && !ft_strcmp(action, "died")))
+		printf("%ld %d %s\n",
+			get_timestamp() - philo->data->start_time, philo->id, action);
 	pthread_mutex_unlock(&philo->data->write_mutex);
 }
 
@@ -36,7 +39,7 @@ void	precise_sleep(long int duration_ms, t_data *data)
 {
 	long int	start;
 	int			stop;
-	
+
 	start = get_timestamp();
 	while ((get_timestamp() - start) < duration_ms)
 	{
@@ -44,7 +47,7 @@ void	precise_sleep(long int duration_ms, t_data *data)
 		stop = data->stop;
 		pthread_mutex_unlock(&data->write_mutex);
 		if (stop)
-			break;
+			break ;
 		usleep(100);
 	}
 }
@@ -52,90 +55,12 @@ void	precise_sleep(long int duration_ms, t_data *data)
 void	*philosopher_routine(void *arg)
 {
 	t_philo	*philo;
-	int	left_locked;
-	int	right_locked;
-	int	done;
 
 	philo = (t_philo *)arg;
-	done = 0;
 	if (philo->data->nb_philo == 1)
-	{
-		print_action(philo, "is thinking");
-		print_action(philo, "has taken a fork");
-		precise_sleep(philo->data->die, philo->data);
-		return (NULL);
-	}
-	usleep((philo->id % 2) * 100);
-	while (1)
-	{
-		pthread_mutex_lock(&philo->data->write_mutex);
-		if (philo->data->stop)
-		{
-			pthread_mutex_unlock(&philo->data->write_mutex);
-			break;
-		}
-		pthread_mutex_unlock(&philo->data->write_mutex);
-		print_action(philo, "is thinking");
-		usleep((philo->id % philo->data->nb_philo) * 100);
-		left_locked = 0;
-		right_locked = 0;
-		if (philo->id == philo->data->nb_philo || philo->id % 2 == 0)
-		{
-			pthread_mutex_lock(philo->right_fork);
-			right_locked = 1;
-			print_action(philo, "has taken a fork");
-			pthread_mutex_lock(philo->left_fork);
-			left_locked = 1;
-			print_action(philo, "has taken a fork");
-		}
-		else
-		{
-			pthread_mutex_lock(philo->left_fork);
-			left_locked = 1;
-			print_action(philo, "has taken a fork");
-			pthread_mutex_lock(philo->right_fork);
-			right_locked = 1;
-			print_action(philo, "has taken a fork");
-		}
-		pthread_mutex_lock(&philo->data->write_mutex);
-		philo->last_meal_time = get_timestamp();
-		pthread_mutex_unlock(&philo->data->write_mutex);
-		pthread_mutex_lock(&philo->data->write_mutex);
-		if (philo->data->stop || (philo->data->nb_meals > 0 && philo->meals_eaten >= philo->data->nb_meals))
-		{
-			pthread_mutex_unlock(&philo->data->write_mutex);
-			if (right_locked)
-				pthread_mutex_unlock(philo->right_fork);
-			if (left_locked)
-				pthread_mutex_unlock(philo->left_fork);
-			break;
-		}
-		pthread_mutex_unlock(&philo->data->write_mutex);
-		print_action(philo, "is eating");
-		precise_sleep(philo->data->eat, philo->data);
-		philo->meals_eaten++;
-		if (!done && philo->data->nb_meals > 0 && philo->meals_eaten >= philo->data->nb_meals)
-		{
-			pthread_mutex_lock(&philo->data->write_mutex);
-			philo->data->nb_p_finish_eat++;
-			pthread_mutex_unlock(&philo->data->write_mutex);
-			done = 1;
-		}
-		if (right_locked)
-			pthread_mutex_unlock(philo->right_fork);
-		if (left_locked)
-			pthread_mutex_unlock(philo->left_fork);
-		usleep(100);
-		pthread_mutex_lock(&philo->data->write_mutex);
-		if (philo->data->stop)
-		{
-			pthread_mutex_unlock(&philo->data->write_mutex);
-			break;
-		}
-		pthread_mutex_unlock(&philo->data->write_mutex);
-		print_action(philo, "is sleeping");
-		precise_sleep(philo->data->sleep, philo->data);
-	}
+		return (solo_philo(philo));
+	usleep((philo->id - 1) * 2000);
+	philo_routine_loop(philo);
 	return (NULL);
 }
 
@@ -148,9 +73,10 @@ int	create_philosopher_threads(t_env *env)
 	while (i < env->data.nb_philo)
 	{
 		ret = pthread_create(&env->philos[i].thread_id, NULL,
-		philosopher_routine, &env->philos[i]);
+				philosopher_routine, &env->philos[i]);
 		if (ret != 0)
-			return (printf("Error: thread creation for philosopher %d failed\n", i + 1), 1);
+			return (printf("Error: thread creation for philosopher %d failed\n",
+					i + 1), 1);
 		i++;
 	}
 	return (0);

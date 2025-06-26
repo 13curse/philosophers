@@ -84,8 +84,9 @@ int	parse_args(int argc, char **argv, t_data *data)
 
 	if (argc != 5 && argc != 6)
 	{
-		printf("Error: 4 or 5 arguments required.\n");
-		printf("Usage: ./philo nb_philo time_to_die time_to_eat time_to_sleep [nb_meals]\n");
+		printf("Error: 4 or 5 arguments required\n");
+		printf("Usage: ./philo nb_philo time_to_die");
+		printf(" time_to_eat time_to_sleep [nb_meals]\n");
 		return (1);
 	}
 	i = 1;
@@ -93,7 +94,8 @@ int	parse_args(int argc, char **argv, t_data *data)
 	{
 		if (!is_positive_int(argv[i]))
 		{
-			printf("Error: Argument %d ('%s') is not a strictly positive integer.\n", i, argv[i]);
+			printf("Error: Argument %d ('%s')", i, argv[i]);
+			printf(" is not a strictly positive integer\n");
 			return (1);
 		}
 		i++;

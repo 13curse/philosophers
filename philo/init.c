@@ -53,6 +53,7 @@ int	init_philosophers(t_env *env)
 int	init_env(t_env *env)
 {
 	int	i;
+
 	if (init_forks(env))
 		return (1);
 	if (init_philosophers(env))
