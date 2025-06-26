@@ -65,7 +65,7 @@ void	*philosopher_routine(void *arg)
 		precise_sleep(philo->data->die, philo->data);
 		return (NULL);
 	}
-	usleep((philo->id - 1) * 2000);
+	usleep((philo->id % 2) * 100);
 	while (1)
 	{
 		pthread_mutex_lock(&philo->data->write_mutex);
@@ -125,7 +125,7 @@ void	*philosopher_routine(void *arg)
 			pthread_mutex_unlock(philo->right_fork);
 		if (left_locked)
 			pthread_mutex_unlock(philo->left_fork);
-		usleep(500);
+		usleep(100);
 		pthread_mutex_lock(&philo->data->write_mutex);
 		if (philo->data->stop)
 		{

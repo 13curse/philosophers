@@ -64,7 +64,7 @@ void	*monitor_routine(void *arg)
 			}
 			pthread_mutex_unlock(&env->data.write_mutex);
 		}
-		usleep(1000);
+		usleep(100);
 	}
 	return (NULL);
 }
