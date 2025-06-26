@@ -48,7 +48,7 @@ Build the project:
 
 ```make```
 
-# or
+**or**
 
 ```make re```
 
