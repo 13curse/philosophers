@@ -1,0 +1,20 @@
+sem_unlink : retire le semaphore passé en paramètre
+il est retiré instantanément. il est détruit une fois
+que tout les processus ayant le semaphore ouvert, le ferme.
+
+sem_open : ouvre un semaphore avec le nom passé en
+paramètre
+
+sem_wait : attends qu'une ressource soit disponible ou la prendre
+on décrémente la valeur du semaphore de 1
+- si la valeur du semaphore est > 0, on decremente et 
+la fonction retourne directement
+- si la valeur est 0, le processus est bloqué, on attends
+qu'un autre process fasse sem_post
+
+sem_post : libère une ressource ou signaler qu'elle est disponible
+on incrémente la valeur du semaphore de 1
+si des process sont bloqués par sem_wait, l'un d'eux
+est réveillé et peut continuer. 
+
+sem_close : ferme le semaphore passé en paramètre
