@@ -47,6 +47,7 @@ typedef struct s_philo
 	long		last_meal;
 	t_data		*data;
 	pthread_t	monitor_thread;
+	sem_t		meal_lock;
 }	t_philo;
 
 //-----INITIALIZE SEMAPHORES-----
@@ -71,6 +72,14 @@ void		philo_think(t_philo *philo);
 long int	get_timestamp(void);
 void		print_action(t_philo *philo, const char *action);
 void		precise_sleep(long int duration_ms, t_philo *philo);
+// philo_actions.c
+void		philo_eat(t_philo *philo);
+void		philo_sleep(t_philo *philo);
+void		philo_think(t_philo *philo);
+// philo_routine.c
+void		check_death_if_needed(t_philo *philo);
+void		take_forks(t_philo *philo);
+void		release_forks(t_philo *philo);
 
 //-----PARSING-----
 // parsing.c

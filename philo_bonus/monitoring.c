@@ -30,8 +30,19 @@ void	*monitor_routine(void *arg)
 	while (1)
 	{
 		usleep(500);
+		sem_wait(&philo->meal_lock);
+		if (philo->data->nb_meals > 0
+			&& philo->meals_eaten >= philo->data->nb_meals)
+		{
+			sem_post(&philo->meal_lock);
+			return (NULL);
+		}
 		if (get_timestamp() - philo->last_meal > philo->data->die)
+		{
+			sem_post(&philo->meal_lock);
 			philo_check_death(philo);
+		}
+		sem_post(&philo->meal_lock);
 	}
 	return (NULL);
 }

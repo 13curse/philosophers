@@ -2,7 +2,7 @@ NAME = philo_bonus
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread
 
-SRCS = init_philo.c init.c main.c parsing_bonus.c monitoring.c
+SRCS = init_philo.c init.c main.c parsing_bonus.c monitoring.c philo_routine.c philo_actions.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
